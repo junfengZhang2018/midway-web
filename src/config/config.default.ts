@@ -16,7 +16,7 @@ export default (appInfo: EggAppInfo) => {
     // false 或者为空代表使用 egg-logger
     replaceEggLogger: true,
   };
-
+  config.jwtSecret = 'INnyQ50BEE6AITQraIaDGooJ';
   // config.security = {
   //   csrf: false,
   // };
