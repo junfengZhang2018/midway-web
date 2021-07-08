@@ -16,6 +16,16 @@ export default (appInfo: EggAppInfo) => {
     // false 或者为空代表使用 egg-logger
     replaceEggLogger: true,
   };
+  config.orm = {
+    type: 'mysql',
+    host: process.env.MYSQL_HOST || '127.0.0.1',
+    port: process.env.MYSQL_PORT || 3306,
+    username: process.env.MYSQL_USERNAME || 'root',
+    password: process.env.MYSQL_PASSWORD || '',
+    database: process.env.MYSQL_DATABASE || 'midway',
+    synchronize: false,
+    logging: false,
+  };
   config.jwtSecret = 'INnyQ50BEE6AITQraIaDGooJ';
   // config.security = {
   //   csrf: false,

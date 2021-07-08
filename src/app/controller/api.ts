@@ -1,7 +1,8 @@
-import { Inject, Controller, Post, Provide } from '@midwayjs/decorator';
+import { Inject, Controller, Post, Provide, Query } from '@midwayjs/decorator';
+// import { IMidwayWebApplication } from '@midwayjs/web';
 import { Context } from 'egg';
-import { IGetUserResponse } from '../../interface';
 import { UserService } from '../service/user';
+import { Results } from '../common/results';
 
 @Provide()
 @Controller('/api')
@@ -13,8 +14,9 @@ export class APIController {
   userService: UserService;
 
   @Post('/get_user')
-  async getUser(): Promise<IGetUserResponse> {
-    const user = await this.userService.getUser({uid: 1});
-    return { success: true, message: 'OK', data: user };
+  async getUser(@Query() id): Promise<any> {
+    return Results.error(10000)
+    // const user = await this.userService.getUser(id);
+    // return { success: true, message: 'OK', data: user };
   }
 }
