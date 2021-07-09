@@ -29,7 +29,7 @@ export class Results {
         });
     }
 
-    static error(code: number){
-        return new Results({code, message: ResultCode.AllValues[code]});
+    static error(code: number, msg?: string){
+        return new Results({code, message: msg || ResultCode.AllValues[code]});
     }
 }

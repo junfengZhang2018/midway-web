@@ -19,5 +19,5 @@ export class ResultCode {
     getMessage(){ return this.message }
 
     static readonly SUCCESS = new ResultCode(0, "成功");
-    static readonly ARGS_ERROR = new ResultCode(10000, "参数校验异常");
+    static readonly ARGS_ERROR = new ResultCode(10000, "参数错误");
 }

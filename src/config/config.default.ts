@@ -9,7 +9,9 @@ export default (appInfo: EggAppInfo) => {
   config.keys = appInfo.name + '_1625490462284_4860';
 
   // add your config here
-  config.middleware = [];
+  config.middleware = [
+    'execptionMiddleware'
+  ];
 
   config.midwayFeature = {
     // true 代表使用 midway logger
