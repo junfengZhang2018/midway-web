@@ -24,11 +24,12 @@ export default (appInfo: EggAppInfo) => {
     port: process.env.MYSQL_PORT || 3306,
     username: process.env.MYSQL_USERNAME || 'root',
     password: process.env.MYSQL_PASSWORD || '',
-    database: process.env.MYSQL_DATABASE || 'midway',
-    synchronize: false,
+    database: process.env.MYSQL_DATABASE || 'documents',
+    synchronize: true,
     logging: false,
   };
   config.jwtSecret = 'INnyQ50BEE6AITQraIaDGooJ';
+  config.tokenTime = '24h';
   // config.security = {
   //   csrf: false,
   // };

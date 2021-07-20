@@ -1,5 +1,5 @@
 import { Provide, Scope, ScopeEnum } from "@midwayjs/decorator";
-import { ResultCode } from "./constants"
+import { ResultCode } from "./resultCode"
 
 @Provide()
 @Scope(ScopeEnum.Singleton)
@@ -14,7 +14,7 @@ export class Results {
         this.data = data;
     }
     
-    static success(data, message?: string){
+    static success(data?: any, message?: string){
         return new Results({data, message});
     }
 

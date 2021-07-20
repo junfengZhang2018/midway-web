@@ -3,7 +3,7 @@ import { IWebMiddleware, MidwayWebMiddleware, IMidwayWebNext } from '@midwayjs/w
 import { Context } from 'egg';
 import { Results } from '../common/results';
 import { ValidationError } from 'joi';
-import { ResultCode } from '../common/constants';
+import { ResultCode } from '../common/resultCode';
 
 @Provide()
 export class ExecptionMiddleware implements IWebMiddleware {

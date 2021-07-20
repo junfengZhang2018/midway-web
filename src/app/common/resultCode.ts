@@ -20,4 +20,6 @@ export class ResultCode {
 
     static readonly SUCCESS = new ResultCode(0, "成功");
     static readonly ARGS_ERROR = new ResultCode(10000, "参数错误");
+    static readonly LOGIN_ERROR = new ResultCode(10001, "账号或密码错误");
+    static readonly ACCOUNT_EXIST_ERROR = new ResultCode(10002, "账号已存在");
 }
