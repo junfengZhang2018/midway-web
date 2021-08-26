@@ -29,10 +29,7 @@ export class UserService {
     // }
 	async addUser(option: loginDto): Promise<boolean> {
 		const { name, password } = option;
-		const exist = await this.user.findOne({
-            name,
-            status: 1,
-        })
+		const exist = await this.user.findOne({ name });
 		if (!isEmpty(exist)) {
 			return false;
 		}
@@ -45,23 +42,14 @@ export class UserService {
 
     async getLoginSign(option: loginDto): Promise<string> {
 		const { name, password } = option;
-        const user = await this.user.findOne({
-            name,
-            status: 1,
-        });
+        const user = await this.user.findOne({ name });
 		if (isEmpty(user)) {
 			return null;
 		}
 		if (password !== user.password) {
 			return null;
 		}
-		const sign = this.utils.jwtSign({
-			name: user.name,
-			administrators: user.administrators,
-			superAdministrators: user.superAdministrators,
-		}, {
-			expiresIn: this.tokenTime,
-		})
+		const sign = this.utils.jwtSign({ name: user.name }, { expiresIn: this.tokenTime })
         return sign;
     }
 

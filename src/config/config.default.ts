@@ -10,7 +10,8 @@ export default (appInfo: EggAppInfo) => {
 
   // add your config here
   config.middleware = [
-    'execptionMiddleware'
+    'execptionMiddleware',
+    'authMiddleware'
   ];
 
   config.midwayFeature = {
@@ -24,7 +25,7 @@ export default (appInfo: EggAppInfo) => {
     port: process.env.MYSQL_PORT || 3306,
     username: process.env.MYSQL_USERNAME || 'root',
     password: process.env.MYSQL_PASSWORD || '',
-    database: process.env.MYSQL_DATABASE || 'documents',
+    database: process.env.MYSQL_DATABASE || 'trade',
     synchronize: true,
     logging: false,
   };

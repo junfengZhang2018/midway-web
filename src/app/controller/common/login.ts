@@ -7,16 +7,16 @@ import {
     Body,
     ALL,
 } from '@midwayjs/decorator';
-// import { IMidwayWebApplication } from '@midwayjs/web';
 import { UserService } from '../../service/user';
 import { Results } from '../../common/results';
 import { loginDto } from '../../dto/user';
 import { BaseController } from '../base';
 import { isEmpty } from 'lodash';
 import { ResultCode } from '../../common/resultCode';
+import { NOAUTH_PREFIX_URL } from '../base'
 
 @Provide()
-@Controller('/')
+@Controller(`${NOAUTH_PREFIX_URL}/`)
 export class CommonController extends BaseController {
     @Inject()
     userService: UserService;

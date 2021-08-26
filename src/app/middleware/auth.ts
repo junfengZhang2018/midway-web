@@ -1,33 +1,53 @@
 import { Provide } from '@midwayjs/decorator';
 import { IWebMiddleware, MidwayWebMiddleware, IMidwayWebNext } from '@midwayjs/web';
 import { Context } from 'egg';
-// import { Results } from '../common/results';
+import { isEmpty } from 'lodash';
 // import { ValidationError } from 'joi';
-// import { ResultCode } from '../common/resultCode';
-import { } from '../controller/base'
+import { Results } from '../common/results';
+import { ResultCode } from '../common/resultCode';
+import { Utils } from '../common/utils'
+import { NOAUTH_PREFIX_URL } from '../controller/base';
 
 @Provide()
 export class AuthMiddleware implements IWebMiddleware {
     resolve(): MidwayWebMiddleware {
         return async (ctx: Context, next: IMidwayWebNext) => {
             try {
+                const url = ctx.url;
+                const token = ctx.get('token');
+                // if (url.startsWith(ADMIN_PREFIX_URL)) {
+                if (url.startsWith(NOAUTH_PREFIX_URL)) {
+                    await next();
+                    return;
+                }
+                if (isEmpty(token)) {
+                    this.reject(ctx);
+                    return;
+                }
+                const utils = await ctx.requestContext.getAsync(Utils);
+                try {
+                    // 挂载对象到当前请求上
+                    ctx.admin = utils.jwtVerify(token);
+                    if (!ctx.admin) {
+                        this.reject(ctx);
+                        return;
+                    }
+                } catch (e) {
+                    // 无法通过token校验
+                    this.reject(ctx);
+                    return;
+                }
+                // }
                 await next();
             } catch (err) {
-                // ctx.logger.error(`[Exception] ${err}`);
-                // ctx.set('Content-Type', 'application/json');
-                // // 生产环境时 500 错误的详细错误内容不返回给客户端，因为可能包含敏感信息
-                // if (err instanceof ValidationError) {
-                //     ctx.body = Results.error(ResultCode.ARGS_ERROR.getCode());
-                //     return;
-                // }
-                // let status: number = err.status || 500;
-                // const message =
-                //   status === 500 && ctx.app.config.env === 'prod'
-                //     ? '服务器好像出了点问题...稍后再试试'
-                //     : err.message;
-                // ctx.status = status;
-                // ctx.body = message;
+                ctx.logger.error(`[Exception] ${err}`);
+                await next();
             }
         };
+    }
+
+    reject(ctx: Context): void {
+        ctx.status = 200;
+        ctx.body = Results.error(ResultCode.TOKEN_ERROR.getCode());
     }
 }
