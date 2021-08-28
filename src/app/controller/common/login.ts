@@ -3,30 +3,29 @@ import {
     Controller,
     Provide,
     Validate,
-    Get,
     Post,
     Body,
     ALL,
 } from '@midwayjs/decorator';
-// import { IMidwayWebApplication } from '@midwayjs/web';
 import { UserService } from '../../service/user';
 import { Results } from '../../common/results';
 import { loginDto } from '../../dto/user';
+import { translateDto } from '../../dto/translate';
 import { BaseController } from '../base';
 import { isEmpty } from 'lodash';
 import { ResultCode } from '../../common/resultCode';
-import * as translate from 'google-translate-api'
-// const translate = require('google-translate-api')
+import { translate } from '../../util/translate'
+import { NOAUTH_PREFIX_URL } from '../base'
 
 @Provide()
-@Controller('/')
+@Controller(`${NOAUTH_PREFIX_URL}/`)
 export class CommonController extends BaseController {
     @Inject()
     userService: UserService;
 
     @Post('/register')
     @Validate()
-    async register(@Body(ALL) info: loginDto): Promise<any> {
+    async register(@Body(ALL) info: loginDto): Promise<Results> {
         const noExist = await this.userService.addUser(info);
 		if (!noExist) {
 			return Results.error(ResultCode.ACCOUNT_EXIST_ERROR.getCode());
@@ -36,7 +35,7 @@ export class CommonController extends BaseController {
 
     @Post('/login')
     @Validate()
-    async login(@Body(ALL) info: loginDto): Promise<any> {
+    async login(@Body(ALL) info: loginDto): Promise<Results> {
         const sign = await this.userService.getLoginSign(info);
         if (isEmpty(sign)) {
             return Results.error(ResultCode.LOGIN_ERROR.getCode());
@@ -44,21 +43,18 @@ export class CommonController extends BaseController {
         return Results.success(sign);
     }
 
-    @Get('/translate')
+    @Post('/translate')
     @Validate()
-    async haha(): Promise<any> {
-        console.log(translate.a)
+    async translate(@Body(ALL) body: translateDto): Promise<Results> {
+        const { content, langs } = body;
         try {
-            const a = await translate.a("['你好','看看','猪头']", {to: 'fr'})
-            return Results.success(a);
-        }catch(err){
-            console.log(err)
+            const result = await translate(content, {to: langs});
+            return Results.success(result.text);
+        } catch (err) {
+            console.log(err);
+            if (err.code === 400) {
+                return Results.error(ResultCode.LANG_ERROR.getCode(), `不支持${langs}语言的翻译`);
+            }
         }
-        
-        // const sign = await this.userService.getLoginSign(info);
-        // if (isEmpty(sign)) {
-        //     return Results.error(ResultCode.LOGIN_ERROR.getCode());
-        // }
-        
     }
 }
