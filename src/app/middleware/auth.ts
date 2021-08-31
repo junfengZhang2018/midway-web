@@ -12,11 +12,11 @@ import { NOAUTH_PREFIX_URL } from '../controller/base';
 export class AuthMiddleware implements IWebMiddleware {
     resolve(): MidwayWebMiddleware {
         return async (ctx: Context, next: IMidwayWebNext) => {
-            await next();
             const url = ctx.url;
             const token = ctx.get('token');
             // if (url.startsWith(ADMIN_PREFIX_URL)) {
             if (url.startsWith(NOAUTH_PREFIX_URL)) {
+                await next();
                 return;
             }
             if (isEmpty(token)) {
@@ -36,6 +36,7 @@ export class AuthMiddleware implements IWebMiddleware {
                 this.reject(ctx);
                 return;
             }
+            await next();
             // }
         };
     }

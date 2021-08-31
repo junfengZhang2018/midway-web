@@ -10,6 +10,7 @@ import {
 import { MsgService } from '../../service/msg';
 import { Results } from '../../common/results';
 import { msgDto } from '../../dto/msg';
+import Msg from '../../entity/admin/msg';
 import { PageSearchDto } from '../../dto/page';
 import { BaseController } from '../base';
 // import { ResultCode } from '../../common/resultCode';
@@ -24,7 +25,7 @@ export class MsgController extends BaseController {
     @Validate()
     async getMsgList(@Body(ALL) page: PageSearchDto): Promise<any> {
         const msgList = await this.msgService.getMsg(page);
-        return Results.success(msgList);
+        return Results.successByPage<Msg[]>(msgList[0], msgList[1], page.pageNum,  page.pageSize);
     }
 
     @Post('/add')
