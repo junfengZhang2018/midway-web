@@ -13,6 +13,6 @@ export default class Msg extends BaseEntity {
 	@Column({ comment: '内容' })
 	content: string;
 
-    @Column({ comment: '作者' })
+    @Column({ comment: '作者', nullable: true })
 	author: string;
 }

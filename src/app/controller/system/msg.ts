@@ -9,7 +9,7 @@ import {
 } from '@midwayjs/decorator';
 import { MsgService } from '../../service/msg';
 import { Results } from '../../common/results';
-import { msgDto } from '../../dto/msg';
+import { AddMsgDto, DelMsgDto, UpdateMsgDto } from '../../dto/msg';
 import Msg from '../../entity/admin/msg';
 import { PageSearchDto } from '../../dto/page';
 import { BaseController } from '../base';
@@ -30,8 +30,22 @@ export class MsgController extends BaseController {
 
     @Post('/add')
     @Validate()
-    async addMsg(@Body(ALL) msg: msgDto): Promise<any> {
+    async addMsg(@Body(ALL) msg: AddMsgDto): Promise<any> {
         const result = await this.msgService.addMsg(msg);
+        return Results.success(result);
+    }
+
+    @Post('/delete')
+    @Validate()
+    async delMsg(@Body(ALL) param: DelMsgDto): Promise<any> {
+        const result = await this.msgService.delMsg(param.id);
+        return Results.success(result);
+    }
+
+    @Post('/update')
+    @Validate()
+    async updateMsg(@Body(ALL) param: UpdateMsgDto): Promise<any> {
+        const result = await this.msgService.updateMsg(param);
         return Results.success(result);
     }
 }

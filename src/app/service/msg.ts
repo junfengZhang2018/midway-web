@@ -2,7 +2,7 @@ import { Inject, Provide } from '@midwayjs/decorator';
 import { InjectEntityModel } from '@midwayjs/orm';
 import { Repository } from 'typeorm';
 import Msg from '../entity/admin/msg';
-import { msgDto } from '../dto/msg';
+import { AddMsgDto, UpdateMsgDto } from '../dto/msg';
 // import { isEmpty } from 'lodash';
 import { Context } from 'egg';
 import { Utils } from '../common/utils';
@@ -27,13 +27,23 @@ export class MsgService {
         return result;
     }
 
-	async addMsg(option: msgDto): Promise<boolean> {
+	async addMsg(option: AddMsgDto): Promise<boolean> {
 		const { title, content } = option;
 		let msg = new Msg();
 		msg.title = title;
 		msg.content = content;
         msg.author = this.ctx.admin.name;
 		await this.msg.save(msg);
+		return true;
+	}
+
+    async delMsg(id: number): Promise<boolean> {
+		await this.msg.delete(id);
+		return true;
+	}
+
+    async updateMsg(option: UpdateMsgDto): Promise<boolean> {
+		await this.msg.update(option.id, {author: this.ctx.admin.name, ...option});
 		return true;
 	}
 }
