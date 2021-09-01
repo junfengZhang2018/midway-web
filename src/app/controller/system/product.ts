@@ -10,7 +10,10 @@ import { BaseController } from '../base';
 export class ProductController extends BaseController {
     @Post('/upload')
     async uploadFile() {
-        // const file = this.ctx.request.files[0];
+        // const file = this.ctx.request.files;
+        const file = await this.ctx.getFileStream();
+        console.log(file)
+        return 1;
         // const name = 'egg-multipart-test/' + basename(file.filename);
         // let result;
         // try {
