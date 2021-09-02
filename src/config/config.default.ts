@@ -35,9 +35,9 @@ export default (appInfo: EggAppInfo) => {
   // config.security = {
   //   csrf: false,
   // };
-  // config.multipart = {
-  //   mode: 'file',
-  // };
+  config.multipart = {
+    mode: 'file',
+  };
 
   return config;
 };

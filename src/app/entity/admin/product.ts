@@ -13,18 +13,18 @@ export default class Product extends BaseEntity {
 	@Column({ comment: '描述' })
 	desc: string;
 
-    @Column({ comment: '主图', type: 'longblob' })
+    @Column({ comment: '主图', type: 'longtext' })
 	image: string;
 
-    @Column({ comment: '副图1' })
-	detailImage1: string;
+    // @Column({ comment: '副图1', type: 'binary' })
+	// detailImage1: string;
 
-    @Column({ comment: '副图2' })
-	detailImage2: string;
+    // @Column({ comment: '副图2', type: 'binary' })
+	// detailImage2: string;
 
-    @Column({ comment: '副图3' })
-	detailImage3: string;
+    // @Column({ comment: '副图3', type: 'binary' })
+	// detailImage3: string;
 
-    @Column({ comment: '副图4' })
-	detailImage4: string;
+    // @Column({ comment: '副图4', type: 'binary' })
+	// detailImage4: string;
 }
