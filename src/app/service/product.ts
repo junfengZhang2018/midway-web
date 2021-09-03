@@ -23,27 +23,15 @@ export class ProductService {
 
 	async addProduct(option): Promise<boolean> {
         console.log(option)
-		// const { name, desc, image, detailImage1, detailImage2, detailImage3, detailImage4 } = option;
-		const { name, desc, image } = option;
-		// const exist = await this.user.findOne({ name });
-		// if (!isEmpty(exist)) {
-		// 	return false;
-		// }
-		let product = new Product();
-		product.name = name;
-		product.desc = desc;
-        // function toArrayBuffer(myBuf) {
-        //     var myBuffer = new ArrayBuffer(myBuf.length);
-        //     var res = new Uint8Array(myBuffer);
-        //     for (var i = 0; i < myBuf.length; ++i) {
-        //        res[i] = myBuf[i];
-        //     }
-        //     return myBuffer;
-        // }
-        product.image = JSON.stringify(image)
+		const { name, desc, image, detailImage1, detailImage2, detailImage3, detailImage4 } = option;
+		// const { name, desc, image } = option;
+		// let product = new Product();
+		// product.name = name;
+		// product.desc = desc;
+        // product.image = image;
         
-		// await this.product.save({ name, desc, image, detailImage1, detailImage2, detailImage3, detailImage4 });
-		await this.product.save(product);
+		await this.product.save({ name, desc, image, detailImage1, detailImage2, detailImage3, detailImage4 });
+		// await this.product.save(product);
 		return true;
 	}
 
