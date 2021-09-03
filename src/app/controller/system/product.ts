@@ -11,6 +11,9 @@ import { BaseController } from '../base';
 import { readFileSync, unlink } from 'fs';
 import { AddProductDto } from '../../dto/product';
 import { ProductService } from '../../service/product';
+import { PageSearchDto } from '../../dto/page';
+import { Results } from '../../common/results';
+import Product from '../../entity/admin/product';
 
 @Provide()
 @Controller('/product')
@@ -50,5 +53,12 @@ export class ProductController extends BaseController {
         //     // 获取所有的字段值
         //     requestBody: ctx.request.body,
         // };
+    }
+
+    @Post('/list')
+    @Validate()
+    async getMsgList(@Body(ALL) page: PageSearchDto): Promise<any> {
+        const msgList = await this.productService.getProduct(page);
+        return Results.successByPage<Product[]>(msgList[0], msgList[1], page.pageNum,  page.pageSize);
     }
 }
