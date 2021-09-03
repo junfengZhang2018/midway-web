@@ -23,4 +23,10 @@ export class Utils {
     jwtVerify(token: string, options?: any): any {
         return JsonWebToken.verify(token, this.jwtSecret, options);
     }
+
+    dealName(fileName: string): string {
+        let fileArr = fileName.split('.');
+        fileArr[fileArr.length-2] = fileArr[fileArr.length-2] + '_' + Date.now();
+        return fileArr.join('.');
+    }
 }
