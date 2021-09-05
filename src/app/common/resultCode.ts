@@ -24,4 +24,6 @@ export class ResultCode {
     static readonly ACCOUNT_EXIST_ERROR = new ResultCode(10002, "账号已存在");
     static readonly TOKEN_ERROR = new ResultCode(10003, "登录无效");
     static readonly LANG_ERROR = new ResultCode(10004, "不支持此语言翻译");
+    static readonly RECORD_ERROR = new ResultCode(10005, "记录不存在");
+    static readonly IMAGE_ERROR = new ResultCode(10006, "主图需上传");
 }

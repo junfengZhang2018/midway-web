@@ -8,13 +8,13 @@ export class AddMsgDto {
     content: string;
 }
 
-export class DelMsgDto {
+export class UpdateMsgDto {
     @Rule(RuleType.number().required())
     id: number;
-}
 
-@Rule(AddMsgDto)
-export class UpdateMsgDto extends AddMsgDto {
-    @Rule(RuleType.number().required())
-    id: number;
+    @Rule(RuleType.string())
+    title: string;
+
+    @Rule(RuleType.string())
+    content: string;
 }

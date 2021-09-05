@@ -15,18 +15,7 @@ export class UserService {
 
 	@Config('tokenTime')
 	tokenTime: string;
-    // async getUser(option: hahaDto) {
-    //   // console.log(option);
-    //   // a.setId(option.a)
-    //   // console.log(a)
-    //   return await this.role.count();
-    //   // return {
-    //   //   uid: options.uid,
-    //   //   username: 'mockedName',
-    //   //   phone: '12345678901232323',
-    //   //   email: 'xxx.xxx@xxx.com',
-    //   // };
-    // }
+    
 	async addUser(option: loginDto): Promise<boolean> {
 		const { name, password } = option;
 		const exist = await this.user.findOne({ name });
