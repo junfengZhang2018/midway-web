@@ -1,4 +1,4 @@
-import { Inject, Provide } from '@midwayjs/decorator';
+import { Config, Inject, Provide } from '@midwayjs/decorator';
 import { InjectEntityModel } from '@midwayjs/orm';
 import { Repository } from 'typeorm';
 import { isEmpty } from 'lodash';
@@ -7,7 +7,6 @@ import { PageSearchDto } from '../dto/page';
 import { imageField } from '../dto/product';
 import Product from '../entity/admin/product';
 import { unlinkSync } from 'fs';
-import { join } from 'path';
 @Provide()
 export class ProductService {
     @InjectEntityModel(Product)
@@ -15,6 +14,9 @@ export class ProductService {
 
 	@Inject()
 	utils: Utils;
+
+    @Config('assets')
+	assets: string;
 
     async getProduct(page: PageSearchDto) {
         const { pageNum, pageSize } = page;
@@ -37,8 +39,8 @@ export class ProductService {
 			return false;
 		}
 		imageField.forEach(item => {
-			if (!isEmpty(product[item])) {
-				let copyPath = join(__dirname, `..${product[item]}`);
+			if (product[item]) {
+				let copyPath = this.assets + product[item];
 				unlinkSync(copyPath);
 			}
 		})
@@ -48,13 +50,15 @@ export class ProductService {
 
 	async updateProduct(option): Promise<boolean> {
 		const product = await this.product.findOne(option.id);
-		if (isEmpty(product)) {
+        if (isEmpty(product)) {
 			return false;
 		}
 		imageField.forEach(item => {
 			if (option.hasOwnProperty(item) && product[item] !== option[item]) {
-				let copyPath = join(__dirname, `..${product[item]}`);
-				unlinkSync(copyPath);
+                if (product[item]) {
+                    let copyPath = this.assets + product[item];
+				    unlinkSync(copyPath);
+                }
 			}
 		})
 		await this.product.update(option.id, option);

@@ -14,9 +14,9 @@ export class ResultCode {
         ResultCode.AllValues[code] = message;
     }
 
-    getCode(){ return this.code }
+    getCode(){ return this.code; }
 
-    getMessage(){ return this.message }
+    getMessage(){ return this.message; }
 
     static readonly SUCCESS = new ResultCode(0, "成功");
     static readonly ARGS_ERROR = new ResultCode(10000, "参数错误");

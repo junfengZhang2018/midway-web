@@ -1,4 +1,5 @@
 import { EggAppConfig, EggAppInfo, PowerPartial } from 'egg';
+import { join } from 'path';
 
 export type DefaultConfig = PowerPartial<EggAppConfig>;
 
@@ -39,5 +40,6 @@ export default (appInfo: EggAppInfo) => {
     mode: 'file'
   };
 
+  config.assets = join(__dirname, '../app/public');
   return config;
 };

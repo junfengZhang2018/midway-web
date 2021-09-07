@@ -6,11 +6,11 @@ import {
     ALL,
     Validate,
     Inject,
+    Config,
 } from '@midwayjs/decorator';
 import { BaseController } from '../base';
 import { copyFileSync, unlinkSync } from 'fs';
-import { join } from 'path';
-import { AddProductDto, UpdateProductDto, imageField, ImageSet } from '../../dto/product';
+import { AddProductDto, UpdateProductDto, imageField } from '../../dto/product';
 import { ProductService } from '../../service/product';
 import { PageSearchDto } from '../../dto/page';
 import { Results } from '../../common/results';
@@ -24,15 +24,23 @@ import { isEmpty } from 'lodash';
 export class ProductController extends BaseController {
     @Inject()
     productService: ProductService;
+
+    @Config('assets')
+	assets: string;
     
     @Post('/add')
     @Validate()
     async uploadFile(@Body(ALL) product: AddProductDto): Promise<Results> {
-        let img = this.dealImage();
-        if (isEmpty(img.image)) {
+        let { img, temp } = this.dealImage();
+        if (isEmpty((img as any).image)) {
             return Results.error(ResultCode.IMAGE_ERROR.getCode());
         }
         const result = await this.productService.addProduct({ ...product, ...img });
+        temp.forEach(item => {
+            let copyPath = this.assets + item.newPath;
+            copyFileSync(item.oldPath, copyPath);
+            unlinkSync(item.oldPath);
+        });
         return Results.success(result);
     }
 
@@ -57,31 +65,40 @@ export class ProductController extends BaseController {
 	@Post('/update')
     @Validate()
     async updateProduct(@Body(ALL) product: UpdateProductDto): Promise<Results> {
-        let img = this.dealImage();
-        if (img.hasOwnProperty('image') && isEmpty(img.image)) {
-            delete img.image;
-        }
+        let { img, temp } = this.dealImage();
         const result = await this.productService.updateProduct({ ...product, ...img });
         if (result) {
+            temp.forEach(item => {
+                let copyPath = this.assets + item.newPath;
+                copyFileSync(item.oldPath, copyPath);
+                unlinkSync(item.oldPath);
+            });
             return Results.success(result);
         } else {
+            temp.forEach(item => {
+                unlinkSync(item.oldPath);
+            });
             return Results.error(ResultCode.RECORD_ERROR.getCode());
         }
     }
 
-    dealImage(): ImageSet {
-        let img = {};
+    dealImage() {
+        let img = {},
+            temp = [];
 		const extName: string[] = ['image/jpeg', 'image/png'];
-        for (const file of this.ctx.request.files) {
-			if (extName.includes(file.mime) && imageField.includes(file.field)) {
-				let sqlPath = `/public/${this.utils.dealName(file.filename)}`;
-				let copyPath = join(__dirname, `../..${sqlPath}`);
-				copyFileSync(file.filepath, copyPath);
-				img[file.field] = sqlPath;
-				// 需要删除临时文件
-				unlinkSync(file.filepath);
-			}
+        if (this.ctx.request.files) {
+            for (const file of this.ctx.request.files) {
+                if (extName.includes(file.mime) && imageField.includes(file.field)) {
+                    let sqlPath = `/product/${this.utils.dealName(file.filename)}`;
+                    img[file.field] = sqlPath;
+                    // 需要删除临时文件
+                    temp.push({
+                        oldPath: file.filepath,
+                        newPath: sqlPath
+                    });
+                }
+            }
         }
-        return img as ImageSet;
+        return { img, temp };
     }
 }
