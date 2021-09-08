@@ -2,7 +2,7 @@ var querystring = require('querystring');
 
 var got = require('got');
 var safeEval = require('safe-eval');
-var token = require('google-translate-token');
+var token = require('./token');
 
 var languages = require('./languages');
 
