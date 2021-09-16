@@ -24,7 +24,7 @@ export class UserService {
 		}
 		let user = new Users();
 		user.name = name;
-		user.password = password;
+		user.password = this.utils.md5(password);
 		await this.user.save(user);
 		return true;
 	}

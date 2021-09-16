@@ -16,12 +16,17 @@ import { isEmpty } from 'lodash';
 import { ResultCode } from '../../common/resultCode';
 import { translate } from '../../util/translate'
 import { NOAUTH_PREFIX_URL } from '../base'
+import { SelectProductDto } from '../../dto/product';
+import { ProductController } from '../system/product';
 
 @Provide()
 @Controller(`${NOAUTH_PREFIX_URL}/`)
 export class CommonController extends BaseController {
     @Inject()
     userService: UserService;
+    
+    @Inject()
+    productController: ProductController;
 
     @Post('/register')
     @Validate()
@@ -56,5 +61,11 @@ export class CommonController extends BaseController {
                 return Results.error(ResultCode.LANG_ERROR.getCode(), `不支持${langs}语言的翻译`);
             }
         }
+    }
+
+    @Post('/productList')
+    @Validate()
+    async productList(@Body(ALL) page: SelectProductDto): Promise<Results> {
+        return this.productController.getProductList(page);
     }
 }

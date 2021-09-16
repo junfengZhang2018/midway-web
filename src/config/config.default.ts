@@ -1,4 +1,5 @@
 import { EggAppConfig, EggAppInfo, PowerPartial } from 'egg';
+import { ConnectionOptions } from 'typeorm';
 import { join } from 'path';
 
 export type DefaultConfig = PowerPartial<EggAppConfig>;
@@ -30,7 +31,7 @@ export default (appInfo: EggAppInfo) => {
     database: process.env.MYSQL_DATABASE || 'trade',
     synchronize: true,
     logging: false,
-  };
+  } as ConnectionOptions;
   config.jwtSecret = 'INnyQ50BEE6AITQraIaDGooJ';
   config.tokenTime = '24h';
   // config.security = {
@@ -41,5 +42,9 @@ export default (appInfo: EggAppInfo) => {
   };
 
   config.assets = join(__dirname, '../app/public');
+  config.cors = {
+    origin: '*'
+  }
+
   return config;
 };

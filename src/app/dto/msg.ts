@@ -1,4 +1,5 @@
 import { Rule, RuleType } from "@midwayjs/decorator";
+import { PageSearchDto } from "./page";
 
 export class AddMsgDto {
     @Rule(RuleType.string().required())
@@ -17,4 +18,10 @@ export class UpdateMsgDto {
 
     @Rule(RuleType.string())
     content: string;
+}
+
+@Rule(PageSearchDto)
+export class SelectMsgDto extends PageSearchDto {
+    @Rule(RuleType.string().empty(''))
+    title: string;
 }

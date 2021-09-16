@@ -10,6 +10,13 @@ export class ExecptionMiddleware implements IWebMiddleware {
     resolve(): MidwayWebMiddleware {
         return async (ctx: Context, next: IMidwayWebNext) => {
             try {
+                // 将null的参数删除
+                let body = ctx.request.body;
+                Object.keys(body).forEach(item => {
+                    if (body[item] === null) {
+                        delete body[item];
+                    }
+                })
                 await next();
             } catch (err) {
                 ctx.logger.error(`[Exception] ${err}`);

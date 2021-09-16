@@ -10,9 +10,8 @@ import {
 } from '@midwayjs/decorator';
 import { BaseController } from '../base';
 import { copyFileSync, unlinkSync } from 'fs';
-import { AddProductDto, UpdateProductDto, imageField } from '../../dto/product';
+import { AddProductDto, UpdateProductDto, imageField, SelectProductDto } from '../../dto/product';
 import { ProductService } from '../../service/product';
-import { PageSearchDto } from '../../dto/page';
 import { Results } from '../../common/results';
 import Product from '../../entity/admin/product';
 import { DelDto } from '../../dto/base';
@@ -46,9 +45,10 @@ export class ProductController extends BaseController {
 
     @Post('/list')
     @Validate()
-    async getProductList(@Body(ALL) page: PageSearchDto): Promise<Results> {
+    async getProductList(@Body(ALL) page: SelectProductDto): Promise<Results> {
         const productList = await this.productService.getProduct(page);
-        return Results.successByPage<Product[]>(productList[0], productList[1], page.pageNum,  page.pageSize);
+        const count = await this.productService.count(page);
+        return Results.successByPage<Product[]>(productList, count, page.pageNum,  page.pageSize);
     }
 
 	@Post('/delete')

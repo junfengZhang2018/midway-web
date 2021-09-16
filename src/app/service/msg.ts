@@ -1,12 +1,11 @@
 import { Inject, Provide } from '@midwayjs/decorator';
 import { InjectEntityModel } from '@midwayjs/orm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import Msg from '../entity/admin/msg';
-import { AddMsgDto, UpdateMsgDto } from '../dto/msg';
+import { AddMsgDto, SelectMsgDto, UpdateMsgDto } from '../dto/msg';
 // import { isEmpty } from 'lodash';
 import { Context } from 'egg';
 import { Utils } from '../common/utils';
-import { PageSearchDto } from '../dto/page';
 @Provide()
 export class MsgService {
     @InjectEntityModel(Msg)
@@ -18,14 +17,30 @@ export class MsgService {
     @Inject()
     ctx: Context;
 
-    async getMsg(page: PageSearchDto): Promise<[Msg[], number]> {
-        const { pageNum, pageSize } = page;
-        const result = await this.msg.findAndCount({
+    async getMsg(page: SelectMsgDto): Promise<Msg[]> {
+        const { pageNum, pageSize, title = '' } = page;
+        const result = await this.msg.find({
+			where: {
+				title: Like(`%${title}%`)
+			},
+			order: {
+				updateTime: 'DESC'
+			},
             take: pageSize,
             skip: (pageNum - 1) * pageSize
         })
         return result;
     }
+
+	async count(page): Promise<number> {
+		const { title = '' } = page;
+		const result = await this.msg.count({
+			where: {
+				title: Like(`%${title}%`)
+			}
+		});
+        return result;
+	}
 
 	async addMsg(option: AddMsgDto): Promise<boolean> {
 		const { title, content } = option;

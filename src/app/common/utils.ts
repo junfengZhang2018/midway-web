@@ -1,5 +1,6 @@
 import { Config, Provide, Scope, ScopeEnum } from '@midwayjs/decorator';
 import * as JsonWebToken from 'jsonwebtoken';
+import * as CryptoJS from 'crypto-js';
 
 @Provide()
 @Scope(ScopeEnum.Singleton)
@@ -23,6 +24,10 @@ export class Utils {
     jwtVerify(token: string, options?: any): any {
         return JsonWebToken.verify(token, this.jwtSecret, options);
     }
+
+    md5(msg: string): string {
+        return CryptoJS.MD5(msg).toString();
+      }
 
     dealName(fileName: string): string {
         let fileArr = fileName.split('.');

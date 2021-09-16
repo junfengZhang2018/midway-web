@@ -3,6 +3,7 @@ import { ILifeCycle } from '@midwayjs/core';
 import { Application } from 'egg';
 import { join } from 'path';
 import * as orm from '@midwayjs/orm';
+import * as moment from 'moment';
 @Configuration({
     imports: [
         orm, // 加载 orm 组件
@@ -14,5 +15,9 @@ export class ContainerLifeCycle implements ILifeCycle {
     @App()
     app: Application;
 
-    async onReady() {}
+    async onReady() {
+		Date.prototype.toJSON = function () {
+			return moment(this).format('YYYY-MM-DD HH:mm:ss');
+		};
+	}
 }

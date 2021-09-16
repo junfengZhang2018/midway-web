@@ -12,6 +12,7 @@ import { NOAUTH_PREFIX_URL } from '../controller/base';
 export class AuthMiddleware implements IWebMiddleware {
     resolve(): MidwayWebMiddleware {
         return async (ctx: Context, next: IMidwayWebNext) => {
+            let validErr: boolean = false;
             const url = ctx.url;
             const token = ctx.get('token');
             // if (url.startsWith(ADMIN_PREFIX_URL)) {
@@ -20,23 +21,21 @@ export class AuthMiddleware implements IWebMiddleware {
                 return;
             }
             if (isEmpty(token)) {
-                this.reject(ctx);
-                return;
+                validErr = true;
             }
             const utils = await ctx.requestContext.getAsync(Utils);
             try {
                 // 挂载对象到当前请求上
                 ctx.admin = utils.jwtVerify(token);
                 if (!ctx.admin) {
-                    this.reject(ctx);
-                    return;
+                    validErr = true;
                 }
             } catch (e) {
                 // 无法通过token校验
-                this.reject(ctx);
-                return;
+                validErr = true;
             }
             await next();
+            validErr && this.reject(ctx);
             // }
         };
     }
