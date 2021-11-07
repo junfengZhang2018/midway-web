@@ -7,6 +7,15 @@ export class AddProductDto {
 
     @Rule(RuleType.string().required())
     desc: string;
+
+    @Rule(RuleType.string().required())
+    price: string;
+
+    @Rule(RuleType.string().required())
+    oldPrice: string;
+    
+    @Rule(RuleType.number().required())
+    homePageShow: number;
 }
 
 export class UpdateProductDto {
@@ -18,6 +27,15 @@ export class UpdateProductDto {
 
     @Rule(RuleType.string())
     desc: string;
+
+    @Rule(RuleType.string())
+    price: string;
+
+    @Rule(RuleType.string())
+    oldPrice: string;
+
+    @Rule(RuleType.number())
+    homePageShow: number;
 
     @Rule(RuleType.equal('null'))
     detailImage1?: string;
@@ -35,7 +53,10 @@ export class UpdateProductDto {
 @Rule(PageSearchDto)
 export class SelectProductDto extends PageSearchDto {
     @Rule(RuleType.string().empty(''))
-    name: string;
+    name?: string;
+
+    @Rule(RuleType.number())
+    homePageShow?: number;
 }
 
 export const imageField = ['image', 'detailImage1', 'detailImage2', 'detailImage3', 'detailImage4'];

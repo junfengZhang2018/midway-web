@@ -16,6 +16,18 @@ export default class Product extends BaseEntity {
     @Column({ comment: '主图' })
 	image: string;
 
+    @Column({ comment: '原价格' })
+	oldPrice: string;
+
+    @Column({ comment: '折扣价格' })
+	price: string;
+
+    @Column({ comment: '星级' })
+	star: number;
+
+    @Column({ comment: '是否在首页展示' })
+	homePageShow: number;
+
     @Column({ comment: '副图1', nullable: true })
 	detailImage1: string;
 

@@ -18,10 +18,11 @@ export class ProductService {
 	assets: string;
 
     async getProduct(page: SelectProductDto) {
-        const { pageNum, pageSize, name = '' } = page;
+        const { pageNum, pageSize, name = '', homePageShow = '' } = page;
         const result = await this.product.find({
             where: {
-				name: Like(`%${name}%`)
+				name: Like(`%${name}%`),
+				homePageShow: Like(`%${homePageShow}%`)
 			},
 			order: {
 				updateTime: 'DESC'
@@ -43,8 +44,7 @@ export class ProductService {
 	}
 	
 	async addProduct(option): Promise<boolean> {
-		const { name, desc, image, detailImage1, detailImage2, detailImage3, detailImage4 } = option;
-		await this.product.save({ name, desc, image, detailImage1, detailImage2, detailImage3, detailImage4 });
+		await this.product.save({ ...option, star: Math.random() > 0.5 ? 4 : 5 });
 		return true;
 	}
 
