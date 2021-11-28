@@ -82,4 +82,9 @@ export class ProductService {
 		await this.product.update(option.id, option);
 		return true;
 	}
+
+	async getProductDetail(id: number) {
+        const result = await this.product.findOne(id);
+        return result;
+    }
 }

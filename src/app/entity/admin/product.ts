@@ -28,6 +28,9 @@ export default class Product extends BaseEntity {
     @Column({ comment: '是否在首页展示' })
 	homePageShow: number;
 
+	@Column({ comment: '信息', type: 'longtext' })
+	information: string;
+
     @Column({ comment: '副图1', nullable: true })
 	detailImage1: string;
 

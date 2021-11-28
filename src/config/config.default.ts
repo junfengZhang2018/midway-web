@@ -1,6 +1,20 @@
 import { EggAppConfig, EggAppInfo, PowerPartial } from 'egg';
 import { ConnectionOptions } from 'typeorm';
 import { join } from 'path';
+import { networkInterfaces } from 'os'
+
+function getIPAdress() {
+  var interfaces = networkInterfaces();
+  for (var devName in interfaces) {
+      var iface = interfaces[devName];
+      for (var i = 0; i < iface.length; i++) {
+          var alias = iface[i];
+          if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+              return alias.address;
+          }
+      }
+  }
+}
 
 export type DefaultConfig = PowerPartial<EggAppConfig>;
 
@@ -42,6 +56,7 @@ export default (appInfo: EggAppInfo) => {
   };
 
   config.assets = join(__dirname, '../app/public');
+  config.host = 'http://' + getIPAdress() + ':7001';
   config.cors = {
     origin: '*'
   }

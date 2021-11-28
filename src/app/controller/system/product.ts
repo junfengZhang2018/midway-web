@@ -9,7 +9,7 @@ import {
     Config,
 } from '@midwayjs/decorator';
 import { BaseController } from '../base';
-import { copyFileSync, unlinkSync } from 'fs';
+import { unlinkSync } from 'fs';
 import { AddProductDto, UpdateProductDto, imageField, SelectProductDto } from '../../dto/product';
 import { ProductService } from '../../service/product';
 import { Results } from '../../common/results';
@@ -26,6 +26,9 @@ export class ProductController extends BaseController {
 
     @Config('assets')
 	assets: string;
+
+    @Config('host')
+	host: string;
     
     @Post('/add')
     @Validate()
@@ -35,12 +38,28 @@ export class ProductController extends BaseController {
             return Results.error(ResultCode.IMAGE_ERROR.getCode());
         }
         const result = await this.productService.addProduct({ ...product, ...img });
-        temp.forEach(item => {
-            let copyPath = this.assets + item.newPath;
-            copyFileSync(item.oldPath, copyPath);
-            unlinkSync(item.oldPath);
-        });
+        this.utils.savePic(temp);
         return Results.success(result);
+    }
+
+    @Post('/upload-img')
+    @Validate()
+    async uploadImg() {
+        let { img, temp } = this.dealImage();
+        this.utils.savePic(temp);
+        return {
+            // errno 即错误代码，0 表示没有错误。
+            //       如果有错误，errno != 0，可通过下文中的监听函数 fail 拿到该错误码进行自定义处理
+            "errno": 0,
+            // data 是一个数组，返回图片Object，Object中包含需要包含url、alt和href三个属性,它们分别代表图片地址、图片文字说明和跳转链接,alt和href属性是可选的，可以不设置或设置为空字符串,需要注意的是url是一定要填的。
+            "data": [
+                {
+                    url: `${this.host}/public${(img as any).image}`,
+                    // alt: "图片文字说明",
+                    // href: "跳转链接"
+                }
+            ]
+        };
     }
 
     @Post('/list')
@@ -68,16 +87,23 @@ export class ProductController extends BaseController {
         let { img, temp } = this.dealImage();
         const result = await this.productService.updateProduct({ ...product, ...img });
         if (result) {
-            temp.forEach(item => {
-                let copyPath = this.assets + item.newPath;
-                copyFileSync(item.oldPath, copyPath);
-                unlinkSync(item.oldPath);
-            });
+            this.utils.savePic(temp);
             return Results.success(result);
         } else {
             temp.forEach(item => {
                 unlinkSync(item.oldPath);
             });
+            return Results.error(ResultCode.RECORD_ERROR.getCode());
+        }
+    }
+
+	@Post('/detail')
+    @Validate()
+    async getProductDetail(@Body() id: number): Promise<Results> {
+        const result = await this.productService.getProductDetail(id);
+        if (result) {
+            return Results.success(result);
+        } else {
             return Results.error(ResultCode.RECORD_ERROR.getCode());
         }
     }
