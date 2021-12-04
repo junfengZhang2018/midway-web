@@ -4,7 +4,7 @@ import { Utils } from '../common/utils';
 
 export const ADMIN_PREFIX_URL = '/';
 // 无需权限URL前缀
-// export const NOPERM_PREFIX_URL = '/common';
+export const NOPERM_PREFIX_URL = '/common';
 // 无需校验TOKEN的URL
 export const NOAUTH_PREFIX_URL = '/public';
 

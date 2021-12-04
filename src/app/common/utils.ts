@@ -2,6 +2,7 @@ import { Config, Provide, Scope, ScopeEnum } from '@midwayjs/decorator';
 import * as JsonWebToken from 'jsonwebtoken';
 import * as CryptoJS from 'crypto-js';
 import { copyFileSync, unlinkSync } from 'fs';
+import { imageField } from '../dto/product';
 
 type picObj = {
     newPath: string,
@@ -41,6 +42,26 @@ export class Utils {
         let fileArr = fileName.split('.');
         fileArr[fileArr.length-2] = fileArr[fileArr.length-2] + '_' + Date.now();
         return fileArr.join('.');
+    }
+
+    dealImage(ctx) {
+        let img = {},
+            temp = [];
+		const extName: string[] = ['image/jpeg', 'image/png'];
+        if (ctx.request.files) {
+            for (const file of ctx.request.files) {
+                if (extName.includes(file.mime) && imageField.includes(file.field)) {
+                    let sqlPath = `/product/${this.dealName(file.filename)}`;
+                    img[file.field] = sqlPath;
+                    // 需要删除临时文件
+                    temp.push({
+                        oldPath: file.filepath,
+                        newPath: sqlPath
+                    });
+                }
+            }
+        }
+        return { img, temp };
     }
 
     savePic(pic: Array<picObj>) {

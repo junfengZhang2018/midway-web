@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash';
 import { Utils } from '../common/utils';
 import { imageField, SelectProductDto } from '../dto/product';
 import Product from '../entity/admin/product';
-import { unlinkSync } from 'fs';
+import { existsSync, unlinkSync } from 'fs';
 @Provide()
 export class ProductService {
     @InjectEntityModel(Product)
@@ -56,7 +56,9 @@ export class ProductService {
 		imageField.forEach(item => {
 			if (product[item]) {
 				let copyPath = this.assets + product[item];
-				unlinkSync(copyPath);
+				if (existsSync(copyPath)) {
+					unlinkSync(copyPath);
+				}
 			}
 		})
 		await this.product.delete(id);
@@ -72,7 +74,9 @@ export class ProductService {
 			if (option.hasOwnProperty(item) && product[item] !== option[item]) {
                 if (product[item]) {
                     let copyPath = this.assets + product[item];
-				    unlinkSync(copyPath);
+				    if (existsSync(copyPath)) {
+				    	unlinkSync(copyPath);
+					}
                 }
                 if (option[item] === 'null') {
                     option[item] = null;

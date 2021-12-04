@@ -17,7 +17,7 @@ import { NOAUTH_PREFIX_URL } from '../base'
 
 @Provide()
 @Controller(`${NOAUTH_PREFIX_URL}/`)
-export class CommonController extends BaseController {
+export class LoginController extends BaseController {
     @Inject()
     userService: UserService;
 

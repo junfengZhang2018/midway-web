@@ -16,6 +16,9 @@ export class AddProductDto {
     
     @Rule(RuleType.number().required())
     homePageShow: number;
+
+    @Rule(RuleType.string())
+    information: string;
 }
 
 export class UpdateProductDto {
@@ -36,6 +39,9 @@ export class UpdateProductDto {
 
     @Rule(RuleType.number())
     homePageShow: number;
+
+    @Rule(RuleType.string())
+    information: string;
 
     @Rule(RuleType.equal('null'))
     detailImage1?: string;
