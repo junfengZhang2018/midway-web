@@ -26,7 +26,7 @@ export class ProductController extends BaseController {
     @Post('/add')
     @Validate()
     async uploadFile(@Body(ALL) product: AddProductDto): Promise<Results> {
-        let { img, temp } = this.utils.dealImage(this.ctx);
+        let { img, temp } = this.utils.dealImage(this.ctx, 'product');
         if (isEmpty((img as any).image)) {
             return Results.error(ResultCode.IMAGE_ERROR.getCode());
         }
@@ -57,7 +57,7 @@ export class ProductController extends BaseController {
 	@Post('/update')
     @Validate()
     async updateProduct(@Body(ALL) product: UpdateProductDto): Promise<Results> {
-        let { img, temp } = this.utils.dealImage(this.ctx);
+        let { img, temp } = this.utils.dealImage(this.ctx, 'product');
         const result = await this.productService.updateProduct({ ...product, ...img });
         if (result) {
             this.utils.savePic(temp);

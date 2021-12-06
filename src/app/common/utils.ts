@@ -1,8 +1,9 @@
 import { Config, Provide, Scope, ScopeEnum } from '@midwayjs/decorator';
 import * as JsonWebToken from 'jsonwebtoken';
 import * as CryptoJS from 'crypto-js';
-import { copyFileSync, unlinkSync } from 'fs';
+import { closeSync, copyFileSync, existsSync, openSync, unlinkSync } from 'fs';
 import { imageField } from '../dto/product';
+import { Context } from 'egg';
 
 type picObj = {
     newPath: string,
@@ -44,14 +45,18 @@ export class Utils {
         return fileArr.join('.');
     }
 
-    dealImage(ctx) {
+    dealImage(ctx: Context, module: string) {
         let img = {},
             temp = [];
+        if (module && !module.startsWith('/')) {
+            module = '/' + module;
+        }
 		const extName: string[] = ['image/jpeg', 'image/png'];
         if (ctx.request.files) {
             for (const file of ctx.request.files) {
                 if (extName.includes(file.mime) && imageField.includes(file.field)) {
-                    let sqlPath = `/product/${this.dealName(file.filename)}`;
+                    let filename = this.dealName(file.filename);
+                    let sqlPath = `${module}/${filename}`;
                     img[file.field] = sqlPath;
                     // 需要删除临时文件
                     temp.push({
@@ -70,5 +75,38 @@ export class Utils {
             copyFileSync(item.oldPath, copyPath);
             unlinkSync(item.oldPath);
         });
+    }
+
+    createLockFile(name: string[]) {
+        name.forEach(item => {
+            closeSync(openSync(this.assets + item, 'w'))
+        });
+    }
+
+    deleteLockFile(allImg: string[]) {
+        allImg.forEach(item => {
+			let [ , filename ] = item.split('/public');
+			filename = this.assets + filename.substring(0, filename.lastIndexOf("."));
+			if (existsSync(filename)) {
+				unlinkSync(filename);
+			}
+		})
+    }
+
+    getSrc(html: string): string[] {
+        var imgReg = /<img.*?(?:>|\/>)/gi;
+        // 匹配src属性
+        var srcReg = /src=[\\"]?([^\\"]*)[\\"]?/i;
+        var arr = html.match(imgReg);
+        let imgs = [],
+            arrEntities = {'lt':'<','gt':'>','nbsp':' ','amp':'&','quot':'"'};
+        if (arr) {
+            for (let i = 0; i < arr.length; i++) {
+                var src = arr[i].match(srcReg)[1];
+                src = src.replace(/&(lt|gt|nbsp|amp|quot);/ig, (all,t) => arrEntities[t] );
+                imgs.push(src);
+            }
+        }
+        return imgs;
     }
 }

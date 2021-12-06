@@ -1,11 +1,12 @@
-import { Config, Inject, Provide } from '@midwayjs/decorator';
+import { Config, Inject, Provide, TaskLocal } from '@midwayjs/decorator'; //
 import { InjectEntityModel } from '@midwayjs/orm';
 import { Repository, Like } from 'typeorm';
 import { isEmpty } from 'lodash';
 import { Utils } from '../common/utils';
 import { imageField, SelectProductDto } from '../dto/product';
 import Product from '../entity/admin/product';
-import { existsSync, unlinkSync } from 'fs';
+import { existsSync, readdir, stat, unlinkSync } from 'fs';
+import { extname } from 'path';
 @Provide()
 export class ProductService {
     @InjectEntityModel(Product)
@@ -45,6 +46,8 @@ export class ProductService {
 	
 	async addProduct(option): Promise<boolean> {
 		await this.product.save({ ...option, star: Math.random() > 0.5 ? 4 : 5 });
+		const allImg = this.utils.getSrc(option.information);
+		this.utils.deleteLockFile(allImg);
 		return true;
 	}
 
@@ -84,6 +87,8 @@ export class ProductService {
 			}
 		})
 		await this.product.update(option.id, option);
+		const allImg = this.utils.getSrc(option.information);
+		this.utils.deleteLockFile(allImg);
 		return true;
 	}
 
@@ -91,4 +96,23 @@ export class ProductService {
         const result = await this.product.findOne(id);
         return result;
     }
+
+	@TaskLocal('0 0 0 * * *')    
+  	async test(){
+		const basePath = this.assets + '/editor'
+		readdir(basePath, (err, files) => {
+			files.forEach(filename => {
+				const fileExt = extname(filename);
+				let lockFile = basePath + '/' + filename.substring(0, filename.lastIndexOf("."));
+				if (fileExt) {
+					stat(lockFile, (err, stats) => {
+						if (!err && Date.now() - stats.birthtimeMs > 24 * 60 * 60 * 1000) {
+							unlinkSync(basePath + '/' + filename);
+							unlinkSync(lockFile);
+						}
+					})
+				}
+			})
+		})
+  	}
 }

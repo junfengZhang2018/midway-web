@@ -28,8 +28,10 @@ export class CommonController extends BaseController {
     @Post('/upload-img')
     @Validate()
     async uploadImg() {
-        let { img, temp } = this.utils.dealImage(this.ctx);
+        let { img, temp } = this.utils.dealImage(this.ctx, 'editor');
         this.utils.savePic(temp);
+        const fileArr = temp.map(item => item.newPath.substring(0, item.newPath.lastIndexOf(".")))
+        this.utils.createLockFile(fileArr);
         return {
             // errno 即错误代码，0 表示没有错误。
             //       如果有错误，errno != 0，可通过下文中的监听函数 fail 拿到该错误码进行自定义处理
@@ -52,6 +54,10 @@ export class CommonController extends BaseController {
             const file = this.assets + filename;
             if (existsSync(file)) {
                 unlinkSync(file);
+                const lockFile = file.substring(0, file.lastIndexOf("."));
+                if (existsSync(lockFile)) {
+                    unlinkSync(lockFile);
+                }
             }
         })
         return Results.success();
@@ -60,12 +66,12 @@ export class CommonController extends BaseController {
     @Post('/password/update')
     @Validate()
     async updatePassword(@Body() fileArr: string[]) {
-        fileArr.forEach(filename => {
-            const file = this.assets + filename;
-            if (existsSync(file)) {
-                unlinkSync(file);
-            }
-        })
+        // fileArr.forEach(filename => {
+        //     const file = this.assets + filename;
+        //     if (existsSync(file)) {
+        //         unlinkSync(file);
+        //     }
+        // })
         return Results.success();
     }
 }
