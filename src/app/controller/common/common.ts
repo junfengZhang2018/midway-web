@@ -6,12 +6,15 @@ import {
     Post,
     Body,
     Config,
+    ALL,
 } from '@midwayjs/decorator';
 import { UserService } from '../../service/user';
 import { Results } from '../../common/results';
 import { existsSync, unlinkSync } from 'fs';
 import { BaseController } from '../base';
 import { NOPERM_PREFIX_URL } from '../base'
+import { UpdatePasswordDto } from '../../dto/user';
+import { ResultCode } from '../../common/resultCode';
 
 @Provide()
 @Controller(`${NOPERM_PREFIX_URL}/`)
@@ -65,13 +68,11 @@ export class CommonController extends BaseController {
 
     @Post('/password/update')
     @Validate()
-    async updatePassword(@Body() fileArr: string[]) {
-        // fileArr.forEach(filename => {
-        //     const file = this.assets + filename;
-        //     if (existsSync(file)) {
-        //         unlinkSync(file);
-        //     }
-        // })
-        return Results.success();
+    async updatePassword(@Body(ALL) dto: UpdatePasswordDto) {
+        const result = await this.userService.updatePassword(this.ctx.admin.uid, dto);
+        if (result) {
+            return Results.success();
+        }
+        return Results.error(ResultCode.PASSWORD_ERROR.getCode());
     }
 }
